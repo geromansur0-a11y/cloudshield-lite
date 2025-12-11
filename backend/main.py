@@ -43,3 +43,6 @@ async def scan_file(file: UploadFile = File(...)):
         }
     finally:
         os.unlink(tmp_path)  # Hapus segera!
+import magic
+file_type = magic.from_file(tmp_path, mime=True)
+# Lalu kembalikan di response: "file_type": file_type
