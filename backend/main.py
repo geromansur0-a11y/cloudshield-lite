@@ -1,12 +1,12 @@
-# backend/main.py
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import HTMLResponse
 import tempfile
 import os
 import hashlib
 
-# Daftar hash malware contoh
+# Daftar hash malware contoh (SHA256)
 KNOWN_MALWARE_HASHES = {
+    # Contoh hash fiktif — ganti dengan daftar nyata jika mau
     "44d88612fea8a8f36de82e1278abb02f88d88612fea8a8f36de82e1278abb02f"
 }
 
@@ -21,19 +21,24 @@ app = FastAPI(title="CloudShield Lite")
 
 @app.get("/", response_class=HTMLResponse)
 async def serve_ui():
-    with open("../static/index.html") as f:
+    # Baca file HTML dari folder static
+    with open("../static/index.html", "r", encoding="utf-8") as f:
         return HTMLResponse(f.read())
 
 @app.post("/scan")
 async def scan_file(file: UploadFile = File(...)):
-    with tempfile.NamedTemporary File(delete=False) as tmp:
+    # Simpan file sementara
+    with tempfile.NamedTemporaryFile(delete=False) as tmp:
         content = await file.read()
         tmp.write(content)
-        tmp_path = tmp.name
+        tmp_path = tmp.name  # <-- tmp_path didefinisikan di sini
 
     try:
+        # Hitung hash file
         file_hash = compute_hash(tmp_path)
+        # Cek apakah hash dikenal sebagai malware
         malicious = file_hash in KNOWN_MALWARE_HASHES
+
         return {
             "filename": file.filename,
             "hash": file_hash,
@@ -41,15 +46,6 @@ async def scan_file(file: UploadFile = File(...)):
             "reason": "Known malware hash" if malicious else "Clean"
         }
     finally:
-        os.unlink(tmp_path)        malicious = file_hash in KNOWN_MALWARE_HASHES
-        return {
-            "filename": file.filename,
-            "hash": file_hash,
-            "malicious": malicious,
-            "reason": "Known malware hash" if malicious else "Clean"
-        }
-    finally:
-        os.unlink(tmp_path)  # Hapus segera!
-import magic
-file_type = magic.from_file(tmp_path, mime=True)
-# Lalu kembalikan di response: "file_type": file_type
+        # Hapus file sementara — pastikan selalu dihapus!
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
