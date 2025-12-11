@@ -7,7 +7,7 @@ import hashlib
 # Daftar hash malware contoh (SHA256)
 KNOWN_MALWARE_HASHES = {
     # Contoh hash fiktif — ganti dengan daftar nyata jika mau
-    "ff9403ef5c7c69ca"
+    "ff9403ef5c7c69ca..."
 }
 
 def compute_hash(file_path: str) -> str:
