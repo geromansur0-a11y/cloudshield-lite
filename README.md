@@ -24,6 +24,8 @@ uvicorn main:app --host 0.0.0.0 --port 8000
 
 # AKSES DI CHROME HP
 http://127.0.0.1:8000
+atau di
+http://0.0.0.0:8000
 
 
 ## ANTI VIRUS INI SANGAT SEDERHANA SILAHKAN KEMBANGKAN LEBIH LANJUT ##
